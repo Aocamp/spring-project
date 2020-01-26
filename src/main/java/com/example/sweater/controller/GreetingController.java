@@ -35,10 +35,18 @@ public class GreetingController {
     @PostMapping
     public String addMessage(
             @RequestParam String text,
+            @RequestParam String tag) {
+        messageRepository.save(new Message(text, tag));
+        return "main";
+    }
+
+    @PostMapping("filter")
+    public String filter(
             @RequestParam String tag,
             Map<String, Object> model
     ) {
-        messageRepository.save(new Message(text, tag));
+        List<Message> messages = messageRepository.findByTag(tag);
+        model.put("messages", messages);
         return "main";
     }
 
