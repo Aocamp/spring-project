@@ -1,42 +1,35 @@
 package com.example.sweater.controller;
 
-import com.example.sweater.model.Message;
-import com.example.sweater.repository.MessageRepository;
+import com.example.sweater.service.MessageService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
-import java.util.List;
 import java.util.Map;
 
 @Controller
 public class GreetingController {
     @Autowired
-    private MessageRepository messageRepository;
+    private MessageService messageService;
 
     @GetMapping("/greeting")
-    public String greeting(
-            @RequestParam(name="name", required=false, defaultValue="World")
-                    String name, Map<String, Object> model) {
-        model.put("name", name);
+    public String greeting(Map<String, Object> model) {
         return "greeting";
     }
 
-    @GetMapping
+    @GetMapping("/main")
     public String main(Map<String, Object> model) {
-        List<Message> messages = messageRepository.findAll();
-        model.put("messages", messages);
+        model.put("messages", messageService.getAll());
         return "main";
     }
 
-    @PostMapping
+    @PostMapping("/main")
     public String addMessage(
             @RequestParam String text,
             @RequestParam String tag) {
-        messageRepository.save(new Message(text, tag));
+        messageService.save(text, tag);
         return "main";
     }
 
@@ -45,8 +38,7 @@ public class GreetingController {
             @RequestParam String tag,
             Map<String, Object> model
     ) {
-        List<Message> messages = messageRepository.findByTag(tag);
-        model.put("messages", messages);
+        model.put("messages", messageService.findByTag(tag));
         return "main";
     }
 
